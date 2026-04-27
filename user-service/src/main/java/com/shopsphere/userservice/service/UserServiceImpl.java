@@ -4,6 +4,7 @@ import com.shopsphere.userservice.dto.AuthResponse;
 import com.shopsphere.userservice.dto.LoginRequest;
 import com.shopsphere.userservice.dto.RegisterRequest;
 import com.shopsphere.userservice.model.User;
+import com.shopsphere.userservice.model.Role;
 import com.shopsphere.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

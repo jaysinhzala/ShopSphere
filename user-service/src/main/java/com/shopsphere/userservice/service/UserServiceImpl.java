@@ -1,5 +1,6 @@
 package com.shopsphere.userservice.service;
 
+import com.shopsphere.userservice.config.JwtService;
 import com.shopsphere.userservice.dto.AuthResponse;
 import com.shopsphere.userservice.dto.LoginRequest;
 import com.shopsphere.userservice.dto.RegisterRequest;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+    // JWT service to generate tokens
+    private final JwtService jwtService;
 
     // Repository to talk to database
     private final UserRepository userRepository;
@@ -38,8 +41,11 @@ public class UserServiceImpl implements UserService {
         // Step 3 - Save user to database
         userRepository.save(user);
 
-        // Step 4 - return response
-        return new AuthResponse(null, user.getRole().name(), "User registered successfully");
+        // Step 4 - Generate JWT token
+        String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
+
+        // Step 5 - Return response with token
+        return new AuthResponse(token, user.getRole().name(), "User registered successfully");
     }
 
     @Override
@@ -54,7 +60,10 @@ public class UserServiceImpl implements UserService {
             return new AuthResponse(null, null, "Invalid password");
         }
 
-        // Step 3 - Return response (JWT token will be added later)
-        return new AuthResponse(null, user.getRole().name(), "Login successful");
+        // Step 3 - Generate JWT token
+        String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
+
+        // Step 4 - Return response with token
+        return new AuthResponse(token, user.getRole().name(), "Login successful");
     }
 }

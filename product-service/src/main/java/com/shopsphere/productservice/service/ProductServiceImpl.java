@@ -110,6 +110,20 @@ public class ProductServiceImpl implements ProductService {
 
     }
 
+    @Override
+    public void updateStock(Long id, Integer quantity) {
+
+        // Find product by id or throw exception
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
+
+        // Reduce stock by ordered quantity
+        product.setStock(product.getStock() - quantity);
+
+        // Save updated product
+        productRepository.save(product);
+    }
+
     // Helper method to convert Product entity to ProductResponse
     private ProductResponse convertToResponse(Product product) {
         return new ProductResponse(

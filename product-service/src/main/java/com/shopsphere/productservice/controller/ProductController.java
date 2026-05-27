@@ -68,4 +68,14 @@ public class ProductController {
         return ResponseEntity.ok(productService.searchProducts(keyword));
     }
 
+    // Update product stock after order is placed
+    // PUT http://localhost:8082/products/{id}/stock
+    @PutMapping("/{id}/stock")
+    public ResponseEntity<Void> updateStock(
+            @PathVariable Long id,
+            @RequestParam Integer quantity) {
+        productService.updateStock(id, quantity);
+        return ResponseEntity.ok().build();
+    }
+
 }

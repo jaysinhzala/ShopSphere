@@ -26,4 +26,7 @@ public interface ProductService {
 
     // Search products by keyword in product name
     List<ProductResponse> searchProducts(String search);
+
+    // Update product stock after order is placed
+    void updateStock(Long id, Integer quantity);
 }

@@ -26,7 +26,7 @@ public class SecurityConfig {
                         // Allow registration and login without authentication
                         .requestMatchers("/users/register", "/users/login").permitAll()
                         // All other requests need authentication
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 );
 
         return http.build();

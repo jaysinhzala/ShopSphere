@@ -38,7 +38,6 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
 
         // Step 1 - Check if this is a public endpoint
         if (isPublicEndpoint(path)) {
-            // Allow request without JWT token
             return chain.filter(exchange);
         }
 
@@ -47,9 +46,8 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
                 .getHeaders()
                 .getFirst(HttpHeaders.AUTHORIZATION);
 
-        // Step 3 - Check if Authorization header exists and starts with "Bearer "
+        // Step 3 - Check if Authorization header exists
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            // Reject request with 401 Unauthorized
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
         }
@@ -62,19 +60,19 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
             Claims claims = extractClaims(token);
 
             // Step 6 - Add user info to request headers
-            exchange.getRequest().mutate()
-                    .header("userId", claims.getSubject())
-                    .header("userRole", claims.get("role", String.class))
+            ServerWebExchange modifiedExchange = exchange.mutate()
+                    .request(r -> r.headers(headers -> {
+                        headers.add("userId", claims.getSubject());
+                        headers.add("userRole", claims.get("role", String.class));
+                    }))
                     .build();
 
+            return chain.filter(modifiedExchange);
+
         } catch (Exception e) {
-            // Token is invalid - reject request
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
         }
-
-        // Step 7 - Continue to the requested service
-        return chain.filter(exchange);
     }
 
     // Check if endpoint is public

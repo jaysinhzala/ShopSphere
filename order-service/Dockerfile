@@ -1,5 +1,5 @@
 # Step 1 - Use Java 21 as base image
-FROM openjdk:21-jdk-slim
+FROM eclipse-temurin:21-jre-jammy
 
 # Step 2 - Set working directory inside container
 WORKDIR /app

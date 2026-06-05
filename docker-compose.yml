@@ -3,6 +3,21 @@ version: '3.8'
 services:
 
   # ==========================================
+  # RabbitMQ
+  # ==========================================
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: shopsphere-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"   # RabbitMQ port
+      - "15672:15672" # RabbitMQ management UI
+    networks:
+      - shopsphere-network
+
+  # ==========================================
   # MySQL Database
   # ==========================================
   mysql:
@@ -113,12 +128,18 @@ services:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       MAIL_USERNAME: ${MAIL_USERNAME}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: guest
+      RABBITMQ_PASSWORD: guest
     ports:
       - "8084:8084"
     depends_on:
       mysql:
         condition: service_healthy
       kafka:
+        condition: service_started
+      rabbitmq:
         condition: service_started
     networks:
       - shopsphere-network
@@ -153,3 +174,4 @@ networks:
 # ==========================================
 volumes:
   mysql-data:
+
